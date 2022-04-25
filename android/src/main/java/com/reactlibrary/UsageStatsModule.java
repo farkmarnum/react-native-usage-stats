@@ -100,6 +100,10 @@ public class UsageStatsModule extends ReactContextBaseJavaModule {
             usageStats.putDouble("lastTimeStamp", us.getLastTimeStamp());
             usageStats.putDouble("lastTimeUsed", us.getLastTimeUsed());
             usageStats.putInt("describeContents", us.describeContents());
+
+            String appName = getAppNameFromPkgName(us.getPackageName());
+            usageStats.putString("appName", appName);
+
             result.putMap(us.getPackageName(), usageStats);
         }
         promise.resolve(result);
@@ -163,5 +167,17 @@ public class UsageStatsModule extends ReactContextBaseJavaModule {
             uid = info.uid;
         }
         return uid;
+    }
+
+    private String getAppNameFromPkgName(String Packagename) {
+        try {
+            PackageManager packageManager = reactContext.getPackageManager();
+            ApplicationInfo info = packageManager.getApplicationInfo(Packagename, PackageManager.GET_META_DATA);
+            String appName = (String) packageManager.getApplicationLabel(info);
+            return appName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 }
